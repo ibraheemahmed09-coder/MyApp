@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enhanced Math Practice App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      font-size: 4em;
+      margin-top: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+      to { text-shadow: 2px 2px 20px rgba(255,255,255,0.3); }
+    }
+    
+    .menu-button {
+      display: inline-block;
+      width: 200px;
+      margin: 15px;
+      padding: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(45deg, #6c757d, #495057);
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .menu-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      background: linear-gradient(45deg, #5a6268, #343a40);
+    }
+    
+    .difficulty-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+    }
+    
+    .difficulty-button {
+      margin: 10px;
+      padding: 15px 25px;
+      font-size: 1.2em;
+      color: white;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .difficulty-button.easy {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+    }
+    
+    .difficulty-button.medium {
+      background: linear-gradient(45deg, #FF9800, #F57C00);
+    }
+    
+    .difficulty-button.hard {
+      background: linear-gradient(45deg, #F44336, #D32F2F);
+    }
+    
+    .difficulty-button:hover {
+      transform: scale(1.1);
+      border-color: #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .difficulty-button.selected {
+      border-color: #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: scale(1.05);
+    }
+    
+    #game-section {
+      display: none;
+      padding: 20px;
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .stat {
+      text-align: center;
+      margin: 10px;
+    }
+    
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      display: block;
+    }
+    
+    .stat-label {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+    
+    #instructions {
+      font-size: 1.2em;
+      margin: 15px 0;
+      opacity: 0.9;
+    }
+    
+    #question {
+      font-size: 3em;
+      margin: 30px 0;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    #answer {
+      font-size: 2em;
+      padding: 15px;
+      width: 150px;
+      text-align: center;
+      border-radius: 10px;
+      border: 3px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.9);
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    
+    #answer:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+    
+    .game-button {
+      font-size: 1.3em;
+      padding: 12px 25px;
+      margin: 15px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+    
+    #check-btn {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      color: white;
+    }
+    
+    #check-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    #next-btn {
+      background: linear-gradient(45deg, #2196F3, #1976D2);
+      color: white;
+      display: none;
+    }
+    
+    #next-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+    }
+    
+    #back-button {
+      background: linear-gradient(45deg, #f44336, #d32f2f);
+      color: white;
+    }
+    
+    #back-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+    }
+    
+    #result {
+      font-size: 1.8em;
+      margin: 25px 0;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .correct {
+      color: #00ff88;
+      animation: bounce 0.6s ease;
+    }
+    
+    .wrong {
+      color: #ff6b6b;
+      animation: shake 0.6s ease;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+    
+    .timer {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #FFD700;
+      margin: 15px 0;
+    }
+    
+    .achievement {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 25px;
+      margin: 10px;
+      display: inline-block;
+      font-weight: bold;
+      animation: pulse 1s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .streak-fire {
+      font-size: 1.2em;
+    }
+    
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5em; }
+      .menu-button { width: 90%; margin: 10px 5%; }
+      #question { font-size: 2em; }
+      .stats-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Welcome Home Screen -->
+    <div id="welcome-screen">
+      <h1>Math Master</h1>
+      <div style="font-size: 1.5em; margin: 30px 0; opacity: 0.9;">
+        🌟 Welcome to your math practice adventure! 🌟
+      </div>
+      
+      <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; margin: 30px 0; max-width: 400px; margin-left: auto; margin-right: auto;">
+        <h3 style="margin-bottom: 20px;">Enter Your Name:</h3>
+        <input type="text" id="player-name" placeholder="Your name here..." style="font-size: 1.3em; padding: 15px; width: 80%; border-radius: 10px; border: none; text-align: center; margin-bottom: 20px;">
+        
+        <div style="margin: 25px 0;">
+          <h4>🏆 High Scores 🏆</h4>
+          <div id="high-scores" style="font-size: 1.1em; margin: 15px 0;">
+            <div>Easy: <span id="high-easy">0</span> points</div>
+            <div>Medium: <span id="high-medium">0</span> points</div>
+            <div>Hard: <span id="high-hard">0</span> points</div>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+          <button class="menu-button" onclick="goToMainMenu()" style="width: 180px; margin: 10px;">
+            🚀 Start Practice!
+          </button>
+          
+          <button class="menu-button" onclick="showCloudStorage()" style="width: 180px; margin: 10px; background: linear-gradient(45deg, #87CEEB, #4682B4);">
+            ☁️ Cloud Scores
+          </button>
+        </div>
+        
+        <div style="margin-top: 25px;">
+          <button class="difficulty-button easy" onclick="clearHighScores()" style="font-size: 1em; padding: 10px 20px;">
+            🗑️ Clear High Scores
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cloud Storage Screen -->
+    <div id="cloud-screen" style="display: none;">
+      <h1>☁️ Cloud Storage</h1>
+      <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; margin: 30px 0; max-width: 500px; margin-left: auto; margin-right: auto;">
+        
+        <h3>💾 Saved Game Sessions</h3>
+        <div id="saved-sessions" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+          <div style="opacity: 0.7; font-style: italic;">No saved sessions yet...</div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin: 30px 0;">
+          <button class="difficulty-button medium" onclick="backToWelcome()" style="padding: 12px 20px;">
+            🏠 Back to Home
+          </button>
+          <button class="difficulty-button hard" onclick="clearCloudStorage()" style="padding: 12px 20px;">
+            🗑️ Clear All Saves
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div id="main-menu" style="display: none;">
+      <h1>Math Master</h1>
+      
+      <div class="difficulty-section">
+        <h3>Choose Difficulty:</h3>
+        <button class="difficulty-button easy selected" onclick="selectDifficulty('easy', this)">Easy (1-5)</button>
+        <button class="difficulty-button medium" onclick="selectDifficulty('medium', this)">Medium (1-10)</button>
+        <button class="difficulty-button hard" onclick="selectDifficulty('hard', this)">Hard (1-15)</button>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+        <button class="menu-button" onclick="startGame('add')">+ Addition</button>
+        <button class="menu-button" onclick="startGame('subtract')">− Subtraction</button>
+        <button class="menu-button" onclick="startGame('multiply')">× Multiplication</button>
+        <button class="menu-button" onclick="startGame('divide')">÷ Division</button>
+      </div>
+      
+      <div style="margin-top: 30px;">
+        <button class="difficulty-button medium" onclick="goBackToWelcome()" style="padding: 12px 25px; font-size: 1.1em;">
+          🏡 Back to Home Screen
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game-section">
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-number" id="score">0</span>
+          <span class="stat-label">Score</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" id="streak">0</span>
+          <span class="stat-label">Streak <span id="streak-fire"></span></span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" id="correct-count">0</span>
+          <span class="stat-label">Correct</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" id="total-count">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </div>
+      
+      <h1 id="game-title"></h1>
+      <div class="timer" id="timer"></div>
+      <div id="instructions"></div>
+      <div id="question"></div>
+      <input type="number" id="answer" placeholder="?" autocomplete="off" inputmode="numeric">
+      <br>
+      <button class="game-button" id="check-btn" onclick="checkAnswer()">Check Answer</button>
+      <button class="game-button" id="next-btn" onclick="nextQuestion()">Next Question</button>
+      <div id="result"></div>
+      <div id="achievements"></div>
+      <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin: 20px 0;">
+        <button class="game-button" id="back-button" onclick="goHome()">🏠 Back to Menu</button>
+        <button class="game-button" onclick="saveAndLeave()" style="background: linear-gradient(45deg, #32CD32, #228B22);">💾 Leave & Save</button>
+        <button class="game-button" onclick="goToWelcomeScreen()" style="background: linear-gradient(45deg, #9C27B0, #673AB7);">🏡 Home Screen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let num1, num2, mode, difficulty = 'easy';
+    let score = 0, streak = 0, correctCount = 0, totalCount = 0;
+    let startTime, questionStartTime;
+    let gameTimer;
+    let playerName = "";
+
+    // Safe storage wrapper
+    const StorageKeys = {
+      HighScores: 'mathMasterHighScores',
+      Sessions: 'mathMasterSessions',
+      PlayerName: 'mathMasterPlayerName'
+    };
+
+    function canUseLocalStorage() {
+      try {
+        const testKey = '__mm_test__';
+        window.localStorage.setItem(testKey, '1');
+        window.localStorage.removeItem(testKey);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const storageAvailable = canUseLocalStorage();
+
+    let highScores = { easy: 0, medium: 0, hard: 0 };
+    let cloudStorage = []; // Array to store saved game sessions
+    
+    function loadFromStorage() {
+      if (!storageAvailable) return;
+      try {
+        const hsRaw = localStorage.getItem(StorageKeys.HighScores);
+        if (hsRaw) {
+          const parsed = JSON.parse(hsRaw);
+          if (parsed && typeof parsed === 'object') {
+            highScores = { easy: parsed.easy || 0, medium: parsed.medium || 0, hard: parsed.hard || 0 };
+          }
+        }
+        const sessionsRaw = localStorage.getItem(StorageKeys.Sessions);
+        if (sessionsRaw) {
+          const parsedSessions = JSON.parse(sessionsRaw);
+          if (Array.isArray(parsedSessions)) {
+            cloudStorage = parsedSessions;
+          }
+        }
+        const savedName = localStorage.getItem(StorageKeys.PlayerName);
+        if (savedName) {
+          playerName = savedName;
+          const nameInput = document.getElementById('player-name');
+          if (nameInput) nameInput.value = playerName;
+        }
+      } catch (e) {
+        // Ignore parsing/storage errors and stay in-memory
+      }
+    }
+
+    function persistHighScores() {
+      if (!storageAvailable) return;
+      try { localStorage.setItem(StorageKeys.HighScores, JSON.stringify(highScores)); } catch (_) {}
+    }
+
+    function persistSessions() {
+      if (!storageAvailable) return;
+      try { localStorage.setItem(StorageKeys.Sessions, JSON.stringify(cloudStorage)); } catch (_) {}
+    }
+
+    function persistPlayerName() {
+      if (!storageAvailable) return;
+      try {
+        const val = document.getElementById('player-name').value.trim();
+        localStorage.setItem(StorageKeys.PlayerName, val);
+      } catch (_) {}
+    }
+
+    // Load high scores and sessions from storage on page load
+    function loadHighScores() {
+      loadFromStorage();
+      updateHighScoresDisplay();
+      updateCloudDisplay();
+    }
+    
+    function updateHighScoresDisplay() {
+      document.getElementById('high-easy').textContent = highScores.easy;
+      document.getElementById('high-medium').textContent = highScores.medium;
+      document.getElementById('high-hard').textContent = highScores.hard;
+    }
+    
+    function saveHighScore() {
+      if (score > highScores[difficulty]) {
+        highScores[difficulty] = score;
+        updateHighScoresDisplay();
+        persistHighScores();
+      }
+    }
+    
+    function clearHighScores() {
+      if (confirm('Are you sure you want to clear all high scores?')) {
+        highScores = { easy: 0, medium: 0, hard: 0 };
+        updateHighScoresDisplay();
+        persistHighScores();
+      }
+    }
+    
+    function showCloudStorage() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('cloud-screen').style.display = 'block';
+      updateCloudDisplay();
+    }
+    
+    function backToWelcome() {
+      document.getElementById('cloud-screen').style.display = 'none';
+      document.getElementById('welcome-screen').style.display = 'block';
+    }
+    
+    function saveAndLeave() {
+      clearInterval(gameTimer);
+      saveGameSession();
+      document.getElementById('game-section').style.display = 'none';
+      document.getElementById('welcome-screen').style.display = 'block';
+    }
+    
+    function saveGameSession() {
+      const session = {
+        difficulty: difficulty,
+        mode: mode,
+        score: score,
+        streak: streak,
+        correctCount: correctCount,
+        totalCount: totalCount,
+        timestamp: new Date().toLocaleString(),
+        highScores: {...highScores}
+      };
+      
+      cloudStorage.unshift(session); // Add to beginning of array
+      
+      // Keep only last 10 sessions to avoid clutter
+      if (cloudStorage.length > 10) {
+        cloudStorage = cloudStorage.slice(0, 10);
+      }
+      
+      // Update high scores if this session had better scores
+      if (score > highScores[difficulty]) {
+        highScores[difficulty] = score;
+        updateHighScoresDisplay();
+        persistHighScores();
+      }
+
+      persistSessions();
+    }
+    
+    function updateCloudDisplay() {
+      const container = document.getElementById('saved-sessions');
+      
+      if (!container) return;
+
+      if (cloudStorage.length === 0) {
+        container.innerHTML = '<div style="opacity: 0.7; font-style: italic;">No saved sessions yet...</div>';
+        return;
+      }
+      
+      container.innerHTML = cloudStorage.map((session, index) => `
+        <div style="background: rgba(255,255,255,0.1); margin: 10px 0; padding: 15px; border-radius: 10px; border-left: 4px solid ${session.difficulty === 'easy' ? '#4CAF50' : session.difficulty === 'medium' ? '#FF9800' : '#F44336'};">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <strong>Game Session</strong> - ${session.mode.charAt(0).toUpperCase() + session.mode.slice(1)} (${session.difficulty.charAt(0).toUpperCase() + session.difficulty.slice(1)})
+              <br><small>🏆 Score: ${session.score} | ✅ ${session.correctCount}/${session.totalCount} | 🔥 ${session.streak} streak</small>
+              <br><small style="opacity: 0.7;">💾 ${session.timestamp}</small>
+            </div>
+            <div style="display:flex; gap: 8px;">
+              <button onclick="loadGameSession(${index})" style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                📥 Load
+              </button>
+              <button onclick="deleteGameSession(${index})" style="background: linear-gradient(45deg, #F44336, #D32F2F); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function loadGameSession(index) {
+      const session = cloudStorage[index];
+      if (!session) return;
+      highScores = {...session.highScores};
+      updateHighScoresDisplay();
+      persistHighScores();
+      
+      alert(`✅ Loaded game session!\nHigh Scores restored: Easy: ${highScores.easy}, Medium: ${highScores.medium}, Hard: ${highScores.hard}`);
+      
+      backToWelcome();
+    }
+
+    function deleteGameSession(index) {
+      if (!confirm('Delete this saved session?')) return;
+      cloudStorage.splice(index, 1);
+      persistSessions();
+      updateCloudDisplay();
+    }
+    
+    function clearCloudStorage() {
+      if (confirm('Are you sure you want to clear all saved game sessions?')) {
+        cloudStorage = [];
+        persistSessions();
+        updateCloudDisplay();
+      }
+    }
+    
+    function goToMainMenu() {
+      playerName = document.getElementById('player-name').value.trim() || 'Player';
+      persistPlayerName();
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('main-menu').style.display = 'block';
+    }
+    
+    // Initialize high scores and sessions on page load
+    window.addEventListener('load', loadHighScores);
+    
+    const difficultyRanges = {
+      easy: { min: 1, max: 5 },
+      medium: { min: 1, max: 10 },
+      hard: { min: 1, max: 15 }
+    };
+    
+    const encouragingMessages = [
+      "Amazing! 🌟", "Fantastic! 🎉", "Perfect! ✨", "Brilliant! 🚀",
+      "Excellent! 🎯", "Outstanding! 🏆", "Superb! 💫", "Incredible! 🎊"
+    ];
+    
+    const tryAgainMessages = [
+      "Keep trying! 💪", "You've got this! 🌟", "Almost there! 🎯",
+      "Don't give up! 🚀", "Practice makes perfect! 📚", "You're learning! 🌱"
+    ];
+
+    function selectDifficulty(level, buttonEl) {
+      difficulty = level;
+      document.querySelectorAll('.difficulty-button').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      if (buttonEl) buttonEl.classList.add('selected');
+    }
+
+    function startGame(selectedMode) {
+      mode = selectedMode;
+      score = 0;
+      streak = 0;
+      correctCount = 0;
+      totalCount = 0;
+      startTime = Date.now();
+      
+      document.getElementById("main-menu").style.display = "none";
+      document.getElementById("game-section").style.display = "block";
+
+      const titles = {
+        add: "+ Addition Practice",
+        subtract: "− Subtraction Practice", 
+        multiply: "× Multiplication Practice",
+        divide: "÷ Division Practice"
+      };
+      
+      const instructions = {
+        add: "Add the numbers together! 🧮",
+        subtract: "Find the difference between the numbers! 📐",
+        multiply: "Multiply the numbers together! ✨",
+        divide: "How many times does the second number fit into the first? 🤔"
+      };
+
+      document.getElementById("game-title").textContent = titles[mode];
+      document.getElementById("instructions").textContent = instructions[mode];
+
+      updateStats();
+      newQuestion();
+      startTimer();
+      document.getElementById("result").textContent = "";
+      document.getElementById("achievements").innerHTML = "";
+    }
+
+    function newQuestion() {
+      questionStartTime = Date.now();
+      const range = difficultyRanges[difficulty];
+      num1 = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      num2 = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+
+      let questionText;
+      switch(mode) {
+        case 'add':
+          questionText = `${num1} + ${num2} = ?`;
+          break;
+        case 'subtract':
+          // Ensure positive results for easier practice
+          if (num1 < num2) [num1, num2] = [num2, num1];
+          questionText = `${num1} − ${num2} = ?`;
+          break;
+        case 'multiply':
+          questionText = `${num1} × ${num2} = ?`;
+          break;
+        case 'divide':
+          // Create division problems with whole number answers
+          let product = num1 * num2;
+          questionText = `${product} ÷ ${num1} = ?`;
+          break;
+      }
+      
+      document.getElementById("question").textContent = questionText;
+      document.getElementById("answer").value = "";
+      document.getElementById("answer").focus();
+      document.getElementById("check-btn").style.display = "inline-block";
+      document.getElementById("next-btn").style.display = "none";
+    }
+
+    function checkAnswer() {
+      let userAnswer = parseInt(document.getElementById("answer").value);
+      let correctAnswer;
+      
+      if (isNaN(userAnswer)) {
+        document.getElementById("result").textContent = "Please enter a number! 🔢";
+        return;
+      }
+
+      switch(mode) {
+        case 'add':
+          correctAnswer = num1 + num2;
+          break;
+        case 'subtract':
+          correctAnswer = num1 - num2;
+          break;
+        case 'multiply':
+          correctAnswer = num1 * num2;
+          break;
+        case 'divide':
+          correctAnswer = num2;
+          break;
+      }
+
+      totalCount++;
+      let resultDiv = document.getElementById("result");
+      let achievementsDiv = document.getElementById("achievements");
+
+      if (userAnswer === correctAnswer) {
+        correctCount++;
+        streak++;
+        
+        // Calculate score based on difficulty only
+        let points = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3;
+        score += points;
+        
+        let message = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+        resultDiv.textContent = `${message} +${points} points!`;
+        resultDiv.className = "correct";
+        
+        // Show achievements
+        checkAchievements(achievementsDiv);
+        
+      } else {
+        streak = 0;
+        let message = tryAgainMessages[Math.floor(Math.random() * tryAgainMessages.length)];
+        resultDiv.textContent = `${message} The answer is ${correctAnswer}`;
+        resultDiv.className = "wrong";
+        achievementsDiv.innerHTML = "";
+      }
+
+      updateStats();
+      
+      if (userAnswer === correctAnswer) {
+        document.getElementById("check-btn").style.display = "none";
+        document.getElementById("next-btn").style.display = "inline-block";
+        
+        setTimeout(() => {
+          if (document.getElementById("next-btn").style.display === "inline-block") {
+            nextQuestion();
+          }
+        }, 2500);
+      } else {
+        // Keep the check button visible for wrong answers so user can try again
+        document.getElementById("answer").value = "";
+        document.getElementById("answer").focus();
+      }
+    }
+
+    function nextQuestion() {
+      newQuestion();
+      document.getElementById("result").textContent = "";
+      document.getElementById("achievements").innerHTML = "";
+    }
+
+    function checkAchievements(achievementsDiv) {
+      if (streak === 5) {
+        achievementsDiv.innerHTML += '<div class="achievement">🔥 Hot Streak! 5 in a row!</div>';
+      }
+      if (streak === 10) {
+        achievementsDiv.innerHTML += '<div class="achievement">⚡ Lightning Fast! 10 streak!</div>';
+      }
+      if (streak === 20) {
+        achievementsDiv.innerHTML += '<div class="achievement">🏆 Math Champion! 20 streak!</div>';
+      }
+      if (correctCount === 25) {
+        achievementsDiv.innerHTML += '<div class="achievement">🌟 Quarter Century! 25 correct!</div>';
+      }
+      if (correctCount === 50) {
+        achievementsDiv.innerHTML += '<div class="achievement">💎 Half Century! 50 correct!</div>';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById("score").textContent = score;
+      document.getElementById("streak").textContent = streak;
+      document.getElementById("correct-count").textContent = correctCount;
+      document.getElementById("total-count").textContent = totalCount;
+      
+      // Update streak fire emoji
+      let fire = "";
+      if (streak >= 5) fire = "🔥";
+      if (streak >= 10) fire = "🔥🔥";
+      if (streak >= 20) fire = "🔥🔥🔥";
+      document.getElementById("streak-fire").textContent = fire;
+    }
+
+    function startTimer() {
+      gameTimer = setInterval(() => {
+        let elapsed = Math.floor((Date.now() - startTime) / 1000);
+        let minutes = Math.floor(elapsed / 60);
+        let seconds = elapsed % 60;
+        document.getElementById("timer").textContent = 
+          `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function goHome() {
+      clearInterval(gameTimer);
+      saveHighScore(); // Save high score when returning home
+      document.getElementById("main-menu").style.display = "block";
+      document.getElementById("game-section").style.display = "none";
+    }
+    
+    function goToWelcomeScreen() {
+      clearInterval(gameTimer);
+      saveHighScore(); // Save high score when going to welcome
+      document.getElementById("welcome-screen").style.display = "block";
+      document.getElementById("game-section").style.display = "none";
+    }
+    
+    function goBackToWelcome() {
+      document.getElementById("main-menu").style.display = "none";
+      document.getElementById("welcome-screen").style.display = "block";
+      document.getElementById('player-name').value = ""; // Clear the name field
+      if (storageAvailable) try { localStorage.removeItem(StorageKeys.PlayerName); } catch (_) {}
+    }
+
+    // Allow Enter key to check answer
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && document.getElementById("game-section").style.display === "block") {
+        if (document.getElementById("check-btn").style.display === "inline-block") {
+          checkAnswer();
+        } else if (document.getElementById("next-btn").style.display === "inline-block") {
+          nextQuestion();
+        }
+      }
+    });
+
+    // Persist name on input changes
+    document.addEventListener('input', function(e) {
+      if (e.target && e.target.id === 'player-name') {
+        persistPlayerName();
+      }
+    });
+
+    // Auto-focus on answer input when game starts
+    document.addEventListener('DOMContentLoaded', function() {
+      const answerEl = document.getElementById("answer");
+      if (answerEl) answerEl.focus();
+    });
+  </script>
+</body>
+</html>
