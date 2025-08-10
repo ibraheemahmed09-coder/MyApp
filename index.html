@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Enhanced Math Practice App</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#764ba2" />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -867,6 +869,11 @@
     document.addEventListener('DOMContentLoaded', function() {
       const answerEl = document.getElementById("answer");
       if (answerEl) answerEl.focus();
+
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
     });
   </script>
 </body>
